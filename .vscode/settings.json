@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "updateseat.h": "c",
+        "insertseat.h": "c",
+        "searchseats.h": "c",
+        "deleteseat.h": "c",
+        "balanceseat.h": "c",
+        "windows.h": "c"
+    }
+}
