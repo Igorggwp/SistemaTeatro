@@ -3,64 +3,120 @@
 #include <string.h> 
 #include <windows.h>
 
-struct Seat {
-    int seatNum;
-    struct Seat *next;
-};
-typedef struct Seat seat;
-typedef seat* SeatList;
 
-struct Node {
-    char name[20];  // Nome da Apresentacao
-    int day; // Dia do evento
-    char time[5]; // Horario do evento
-    SeatList seats;
-    struct Node *left;
-    struct Node *right;
+struct Poltrona {
+    int NumPoltrona;
+    struct Poltrona *prox;
 };
-typedef struct Node node;
-typedef struct Node *Presentation;
+typedef struct Poltrona poltrona;
+typedef poltrona* ListaPoltrona;
+
+struct No {
+    char nome[20];  // Nome da Apresentacao
+    int dia;
+    char horario[5];
+    ListaPoltrona poltronas;
+    struct No *esquerda;
+    struct No *direita;
+};
+typedef struct No no;
+typedef struct No *Apresentacao;
 
 void logo() {
     printf("-----------------------------\n");
-    printf("|       Teatro da Gama      |\n");
+    printf("|       Teatro Vegetti      |\n");
     printf("-----------------------------\n");
 }
 
-Presentation createNode(char name[], int day, char time[]) {
-    Presentation newNode = (Presentation)malloc(sizeof(node)); // Aloca ponteiro newNode(raiz) da árvore
-    if (newNode != NULL) {
-        strcpy(newNode->name, name);
-        newNode->day = day;
-        strcpy(newNode->time, time);
-        newNode->seats = NULL;
-        newNode->left = NULL;
-        newNode->right = NULL;
+Apresentacao balancearApresentacoes(Apresentacao raiz);
+
+Apresentacao CriarNo(char nome[], int dia, char horario[]) {
+    Apresentacao novoNo = (Apresentacao)malloc(sizeof(no));
+    if (novoNo != NULL) {
+        strcpy(novoNo->nome, nome);
+        novoNo->dia = dia;
+        strcpy(novoNo->horario, horario);
+        novoNo->poltronas = NULL;
+        novoNo->esquerda = NULL;
+        novoNo->direita = NULL;
     } else {
         printf("Erro na alocação de memôria.\n");
     }
-    return newNode;
+    return novoNo;
 }
 
-#include "src/balanceSeat.h"
-#include "src/deleteSeat.h"
-#include "src/insertSeat.h"
-#include "src/searchSeats.h"
-#include "src/updateSeat.h"
-#include "src/balancePresentation.h"
-#include "src/deletePresentation.h"
-#include "src/insertPresentation.h"
-#include "src/searchPresentation.h"
-#include "src/updatePresentation.h"
+#include "src/atualizarApresentacao.h"
+#include "src/balancearApresentacoes.h"
+#include "src/deletarApresentacao.h"
+#include "src/inserirApresentacao.h"
+#include "src/listarApresentacoes.h"
+#include "src/atualizarPoltrona.h"
+#include "src/balancearPoltronas.h"
+#include "src/deletarPoltrona.h"
+#include "src/inserirPoltrona.h"
+#include "src/listarPoltronas.h"
+
+int altura(Apresentacao no) {
+    if (no == NULL) 
+        return 0;
+    int alturaEsquerda = altura(no->esquerda);
+    int alturaDireita = altura(no->direita);
+    return 1 + (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita);
+}
+int fator(Apresentacao no) {
+    if (no == NULL)
+        return 0;
+    return altura(no->esquerda) - altura(no->direita);
+}
+Apresentacao rotacaoDireita(Apresentacao y) {
+    Apresentacao x = y->esquerda;
+    Apresentacao T2 = x->direita;
+
+    x->direita = y;
+    y->esquerda = T2;
+
+    return x;
+}
+
+Apresentacao rotacaoEsquerda(Apresentacao x) {
+    Apresentacao y = x->direita;
+    Apresentacao T2 = y->esquerda;
+
+    y->esquerda = x;
+    x->direita = T2;
+
+    return y;
+}
+
+Apresentacao balancearApresentacoes(Apresentacao raiz) {
+    if (raiz == NULL)
+        return raiz;
+
+    int balanco = fator(raiz);
+
+    if (balanco > 1) {
+        if (fator(raiz->esquerda) < 0) {
+            raiz->esquerda = rotacaoEsquerda(raiz->esquerda);
+        }
+        return rotacaoDireita(raiz);
+    }
+    else if (balanco < -1) {
+        if (fator(raiz->direita) > 0) {
+            raiz->direita = rotacaoDireita(raiz->direita);
+        }
+        return rotacaoEsquerda(raiz);
+    }
+    return raiz;
+}
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
-    Presentation root = NULL;
+    Apresentacao raiz = NULL;
     int alt = 0;
     int alt1 = 0;
-    int day;
-    char name[20];
-    char time[5];
+    // int dia;
+    // char nome[20];
+    // char horario[5];
 
     do {
         system("cls");
@@ -73,7 +129,7 @@ int main() {
                 do {
                     system("cls");
                     logo();
-                    printf("Selecione a opção desejada\n[1] - Cadastrar Apresentação\n[2] - Atualizar Apresentação\n[3] - Listar Apresentações\n[4] - Deletar Apresentação\n[0] - Voltar\n->");
+                    printf("Selecione a opção desejada\n[1] - Cadastrar Apresentação\n[2] - Atualizar Apresentação\n[3] -aar Apresentações\n[4] - Deletar Apresentação\n[0] - Voltar\n->");
                     scanf("%d", &alt1);
 
                     switch (alt1) {
@@ -82,28 +138,28 @@ int main() {
                             printf("----------------------------------------\n");
                             printf("|        Cadastrar Apresentação        |\n");
                             printf("----------------------------------------\n");
-                            insertPresentation();
+                            inserirApresentacao(&raiz);
                             break;
                         case 2:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|        Atualizar Apresentação        |\n");
                             printf("----------------------------------------\n");
-                            updatePresentation();
+                            atualizarApresentacao(&raiz);
                             break;
                         case 3:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|        Listar Apresentações        |\n");
+                            printf("|         Listar Apresentações         |\n");
                             printf("----------------------------------------\n");
-                            searchPresentations();
+                            listarApresentacoes();
                             break;
                         case 4:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|          Deletar Apresentação        |\n");
                             printf("----------------------------------------\n");
-                            deletePresentation();
+                            deletarApresentacao(&raiz);
                             break;
                         case 0:
                             break;
@@ -117,7 +173,7 @@ int main() {
                 do {
                     system("cls");
                     logo();
-                    printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltronas\n[4] - Deletar Poltrona\n[0] - Voltar\n->");
+                    printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] -aar Poltronas\n[4] - Deletar Poltrona\n[0] - Voltar\n->");
                     scanf("%d", &alt1);
 
                     switch (alt1) {
@@ -126,28 +182,28 @@ int main() {
                             printf("----------------------------------------\n");
                             printf("|           Cadastrar Poltrona         |\n");
                             printf("----------------------------------------\n");
-                            insertSeat();
+                            inserirPoltrona();
                             break;
                         case 2:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|           Atualizar Poltrona         |\n");
                             printf("----------------------------------------\n");
-                            updateSeat();
+                            atualizarPoltrona();
                             break;
                         case 3:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|           Listar Poltronas           |\n");
                             printf("----------------------------------------\n");
-                            searchSeats();
+                            listarPoltronas();
                             break;
                         case 4:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|            Deletar Poltrona          |\n");
                             printf("----------------------------------------\n");
-                            deleteSeat();
+                            deletarPoltrona();
                             break;
                         case 0:
                             break;
