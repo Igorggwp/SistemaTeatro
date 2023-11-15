@@ -5,6 +5,14 @@
         "searchseats.h": "c",
         "deleteseat.h": "c",
         "balanceseat.h": "c",
-        "windows.h": "c"
+        "windows.h": "c",
+        "deletepresentation.h": "c",
+        "updatepresentation.h": "c",
+        "searchpresentation.h": "c",
+        "inserirapresentacao.h": "c",
+        "inserirpoltrona.h": "c",
+        "atualizarapresentacao.h": "c",
+        "deletarapresentacao.h": "c",
+        "listarpoltronas.h": "c"
     }
 }
