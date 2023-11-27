@@ -1,4 +1,4 @@
-# 💺Sistema de Agendamento de Poltronas para Apresentações de Teatro
+# Sistema de Agendamento de Poltronas para Apresentações de Teatro
 
 ## 📖 Descrição do Projeto
 Este sistema, desenvolvido em linguagem C, é uma solução para o agendamento de poltronas em apresentações de teatro. Ele utiliza estruturas de dados como Árvore para poltronas e Lista Encadeada para as apresentações.
@@ -8,7 +8,7 @@ Este sistema, desenvolvido em linguagem C, é uma solução para o agendamento d
 1. **Cadastro de Apresentações:**
    - Permite cadastrar novas apresentações, incluindo informações como data, horário e nome da peça.
 
-2. **Cadastro de Poltronas:**
+2.  **Cadastro de Poltronas:**
    - Utiliza uma árvore para o agendamento de poltronas. Cada apresentação possui uma árvore de poltronas associada.
 
 3. **Balanceamento de Poltronas:**
