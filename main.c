@@ -13,6 +13,7 @@ typedef struct Poltrona Poltrona;
 typedef struct Poltrona *Arvore;
 
 struct Apresentacao {
+    int id;
     char nome[20];  // Nome da Apresentacao
     int dia;
     int mes;
@@ -29,14 +30,11 @@ struct NoApresentacao {
 typedef struct NoApresentacao NoApresentacao;
 typedef NoApresentacao *Lista;
 
-
 void logo() {
     printf("-----------------------------\n");
     printf("|       Teatro Vegetti      |\n");
     printf("-----------------------------\n");
 }
-
-
 
 Arvore encontrarMenorNo(Arvore raiz);
 
