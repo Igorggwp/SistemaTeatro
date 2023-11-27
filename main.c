@@ -3,25 +3,32 @@
 #include <string.h> 
 #include <windows.h>
 
-struct ApresentacaoNo {
+struct Poltrona {
+    int numero;
+    char status; // R = Reservado, L = Livre
+    struct Poltrona *esquerda;
+    struct Poltrona *direita;
+};
+typedef struct Poltrona Poltrona;
+typedef struct Poltrona *Arvore;
+
+struct Apresentacao {
     char nome[20];  // Nome da Apresentacao
     int dia;
     int mes;
-    char horario[5];
-    struct PoltronaNo *poltronas;
-    struct ApresentacaoNo *esquerda;
-    struct ApresentacaoNo *direita;
+    char horario[6];
+    Arvore poltronas;
+    struct Apresentacao *proxima;
 };
-typedef struct ApresentacaoNo ApresentacaoNo;
-typedef struct ApresentacaoNo *ApresentacaoArvore;
+typedef struct Apresentacao Apresentacao;
 
-struct PoltronaNo {
-    int NumPoltrona;
-    struct PoltronaNo *esquerda;
-    struct PoltronaNo *direita;
+struct NoApresentacao {
+    Apresentacao apresentacao;
+    struct NoApresentacao *proxima;
 };
-typedef struct PoltronaNo PoltronaNo;
-typedef struct PoltronaNo *PoltronaArvore;
+typedef struct NoApresentacao NoApresentacao;
+typedef NoApresentacao *Lista;
+
 
 void logo() {
     printf("-----------------------------\n");
@@ -29,18 +36,17 @@ void logo() {
     printf("-----------------------------\n");
 }
 
-ApresentacaoArvore balancearApresentacoes(ApresentacaoArvore raizApresentacao, ApresentacaoArvore novoNo);
 
-PoltronaArvore balancearPoltronas(PoltronaArvore raizPoltrona);
 
-ApresentacaoArvore CriarNoApresentacao(char nome[], int dia, int mes, char horario[]) {
-    ApresentacaoArvore novoNo = (ApresentacaoArvore)malloc(sizeof(ApresentacaoNo));
+Arvore encontrarMenorNo(Arvore raiz);
+
+Arvore balancear(Arvore raiz, Arvore novoNo);
+
+Arvore CriarNo(int numero, char status) {
+    Arvore novoNo = (Arvore)malloc(sizeof(Poltrona));
     if (novoNo != NULL) {
-        strcpy(novoNo->nome, nome);
-        novoNo->dia = dia;
-        novoNo->mes = mes;
-        strcpy(novoNo->horario, horario);
-        novoNo->poltronas = NULL;
+        novoNo->numero = numero;
+        novoNo->status = status;
         novoNo->esquerda = NULL;
         novoNo->direita = NULL;
     } else {
@@ -49,54 +55,37 @@ ApresentacaoArvore CriarNoApresentacao(char nome[], int dia, int mes, char horar
     return novoNo;
 }
 
-PoltronaArvore CriarNoPoltrona(int numPoltrona) {
-    PoltronaArvore novoNo = (PoltronaArvore)malloc(sizeof(PoltronaNo));
-    if (novoNo != NULL) {
-        novoNo->NumPoltrona = numPoltrona;
-        novoNo->esquerda = NULL;
-        novoNo->direita = NULL;
-    } else {
-        printf("Erro na alocação de memória.\n");
-    }
-    return novoNo;
-}
+#include "src/atualizar.h"
+#include "src/balancear.h"
+#include "src/cadastrar.h"
+#include "src/deletar.h"
+#include "src/listar.h"
+#include "src/lista.h"
 
-#include "src/atualizarApresentacao.h"
-#include "src/balancearApresentacoes.h"
-#include "src/cadastrarApresentacao.h"
-#include "src/deletarApresentacao.h"
-#include "src/listarApresentacoes.h"
-#include "src/atualizarPoltrona.h"
-#include "src/balancearPoltronas.h"
-#include "src/deletarPoltrona.h"
-#include "src/cadastrarPoltrona.h"
-#include "src/listarPoltronas.h"
-
-
-void liberarArvoreApresentacao(ApresentacaoArvore raiz) {
+void liberarArvore(Arvore raiz) {
     if (raiz != NULL) {
-        liberarArvoreApresentacao(raiz->esquerda);
-        liberarArvoreApresentacao(raiz->direita);
+        liberarArvore(raiz->esquerda);
+        liberarArvore(raiz->direita);
         free(raiz);
     }
 }
 
-void liberarArvorePoltronas(PoltronaArvore raiz) {
-    if (raiz != NULL) {
-        liberarArvorePoltronas(raiz->esquerda);
-        liberarArvorePoltronas(raiz->direita);
-        free(raiz);
+void liberarLista(Lista lista) {
+    while (lista != NULL) {
+        NoApresentacao *temp = lista;
+        lista = lista->proxima;
+        liberarArvore(temp->apresentacao.poltronas);
+        free(temp);
     }
 }
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
-    ApresentacaoArvore raizApresentacao = NULL;
-    PoltronaArvore raizPoltrona = NULL;
-    char nome[20];
-    // int numPoltrona;
+    Arvore raiz = NULL;
     int alt = 0;
     int alt1 = 0;
+    int alt2 = 0;
+    Lista lista = NULL;
 
     do {
         system("cls");
@@ -107,39 +96,25 @@ int main() {
         switch (alt) {
             case 1:
                 do {
-                    system("cls");
+                    // system("cls");
                     logo();
-                    printf("Selecione a opção desejada\n[1] - Cadastrar Apresentação\n[2] - Atualizar Apresentação\n[3] - Listar Apresentações\n[4] - Deletar Apresentação\n[0] - Voltar\n->");
+                    printf("Selecione a opção desejada\n[1] - Cadastrar Apresentação\n[2] - Listar Apresentação\n[0] - Voltar\n->");
                     scanf("%d", &alt1);
 
                     switch (alt1) {
                         case 1:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|        Cadastrar Apresentação        |\n");
+                            printf("|         Cadastrar Apresentação        |\n");
                             printf("----------------------------------------\n");
-                            cadastrarApresentacao(&raizApresentacao);
+                            cadastrarApresentacao(&lista);
                             break;
                         case 2:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|        Atualizar Apresentação        |\n");
+                            printf("|          Listar Apresentações         |\n");
                             printf("----------------------------------------\n");
-                            atualizarApresentacao(&raizApresentacao);
-                            break;
-                        case 3:
-                            system("cls");
-                            printf("----------------------------------------\n");
-                            printf("|         Listar Apresentações         |\n");
-                            printf("----------------------------------------\n");
-                            listarApresentacoes(raizApresentacao);
-                            break;
-                        case 4:
-                            system("cls");
-                            printf("----------------------------------------\n");
-                            printf("|          Deletar Apresentação        |\n");
-                            printf("----------------------------------------\n");
-                            deletarApresentacao(&raizApresentacao, nome);
+                            listarApresentacoes(lista);
                             break;
                         case 0:
                             break;
@@ -151,39 +126,39 @@ int main() {
                 break;
             case 2:
                 do {
-                    system("cls");
+                    // system("cls");
                     logo();
-                    printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] -aar Poltronas\n[4] - Deletar Poltrona\n[0] - Voltar\n->");
-                    scanf("%d", &alt1);
+                    printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltrona\n[4] - Deletar Poltrona\n[0] - Voltar\n->");
+                    scanf("%d", &alt2);
 
-                    switch (alt1) {
+                    switch (alt2) {
                         case 1:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|           Cadastrar Poltrona         |\n");
+                            printf("|          Cadastrar Poltrona          |\n");
                             printf("----------------------------------------\n");
-                            cadastrarPoltrona(&raizPoltrona);
+                            cadastrar(&raiz);
                             break;
                         case 2:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|           Atualizar Poltrona         |\n");
+                            printf("|          Atualizar Poltrona          |\n");
                             printf("----------------------------------------\n");
-                            atualizarPoltrona(&raizPoltrona);
+                            atualizar(&raiz);
                             break;
                         case 3:
                             system("cls");
                             printf("----------------------------------------\n");
-                            printf("|           Listar Poltronas           |\n");
+                            printf("|           Listar Poltrona            |\n");
                             printf("----------------------------------------\n");
-                            listarPoltronas(raizPoltrona);
+                            listar(raiz);
                             break;
                         case 4:
                             system("cls");
                             printf("----------------------------------------\n");
                             printf("|            Deletar Poltrona          |\n");
                             printf("----------------------------------------\n");
-                            deletarPoltrona(&raizPoltrona);
+                            deletar(&raiz);
                             break;
                         case 0:
                             break;
@@ -191,7 +166,7 @@ int main() {
                             printf("Opção inválida. Tente novamente.\n");
                             break;
                     }
-                } while (alt1 != 0);
+                } while (alt2 != 0);
                 break;
             case 0:
                 break;
@@ -200,7 +175,7 @@ int main() {
                 break;
         }
     } while (alt != 0);
-    liberarArvoreApresentacao(raizApresentacao);
-    liberarArvorePoltronas(raizPoltrona);
+    liberarLista(lista);
+    liberarArvore(raiz);
     return 0;
 }
