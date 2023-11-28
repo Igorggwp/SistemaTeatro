@@ -1,4 +1,6 @@
-void listar(Arvore raiz) {
+/* Função para Listar Poltronas */
+
+void listar(Evento raiz) {
     static int frase = 0;
 
     if (raiz != NULL) {
@@ -10,10 +12,10 @@ void listar(Arvore raiz) {
         listar(raiz->esquerda);
         printf("Número: %d | Status: %c\n", raiz->numero, raiz->status);
         listar(raiz->direita);
+        
     } else {
         if (!frase) {
-            printf("A árvore está vazia.\n");
-            frase = 1;
+            printf("A arvore está vazia.\n");
         }
     }
 }

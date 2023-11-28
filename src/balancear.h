@@ -1,66 +1,109 @@
-int altura(Arvore no) {
-    if (no == NULL) 
+lista* criarlista(){
+    lista *inicio = (lista*) malloc(sizeof(lista));
+    if (inicio != NULL){
+        *inicio = NULL;
+    }else{
+        printf("Erro na alocaçãooo");
+    }
+    return inicio;
+}
+
+void exibelista(lista*inicio){
+    
+    if(*inicio == NULL){
+        printf("Lista vazia");
+    }else{
+        node *temp;
+        temp = (*inicio);
+
+        while (temp != NULL){
+            printf("%s\n", temp->evento->status);
+            temp = temp->prox;
+        }
+    }
+}
+
+int inserenofinal(lista* inicio, Evento nodeArv) {
+    node* novo = (node*)malloc(sizeof(node));
+    if (novo == NULL) {
+        printf("Erro na alocação\n");
         return 0;
-    int alturaEsquerda = altura(no->esquerda);
-    int alturaDireita = altura(no->direita);
-    return 1 + (alturaEsquerda > alturaDireita ? alturaEsquerda : alturaDireita);
+    } else {
+        if ((*inicio) == NULL) {
+            *inicio = novo;
+        } else {
+            node* temp;
+            temp = (*inicio);
+            while (temp->prox != NULL) {
+                temp = temp->prox;
+            }
+            temp->prox = novo;
+            novo->prox = NULL;
+        }
+        novo->evento = nodeArv;
+        return 1;
+    }
 }
 
-int fator(Arvore no) {
-    if (no == NULL)
-        return 0;
-    return altura(no->esquerda) - altura(no->direita);
+int construirLista(Evento nodeArv, lista* list) {
+    if (nodeArv == NULL) {
+        return 1;
+    }
+    construirLista(nodeArv->esquerda, list);
+    inserenofinal(list, nodeArv);
+    construirLista(nodeArv->direita, list);
+    
 }
 
-Arvore rotacaoDireita(Arvore y) {
-    Arvore x = y->esquerda;
-    Arvore T2 = x->direita;
-
-    x->direita = y;
-    y->esquerda = T2;
-
-    return x;
+no *criarNo(int numero, const char *status) {
+    no *novoNo = (no *)malloc(sizeof(no));
+    novoNo->numero = numero;
+    strcpy(novoNo->status, status);
+    novoNo->esquerda = NULL;
+    novoNo->direita = NULL;
+    return novoNo;
 }
 
-Arvore rotacaoEsquerda(Arvore x) {
-    Arvore y = x->direita;
-    Arvore T2 = y->esquerda;
-
-    y->esquerda = x;
-    x->direita = T2;
-
-    return y;
-}
-
-Arvore balancear(Arvore raiz, Arvore novoNo) {
-    if (raiz == NULL)
-        return novoNo;
-        
-    if (novoNo->numero < raiz->numero)
-        raiz->esquerda = balancear(raiz->esquerda, novoNo);
-    else if (novoNo->numero > raiz->numero)
-        raiz->direita = balancear(raiz->direita, novoNo);
-    else
-        return raiz; 
-
-    int alturaEsquerda = altura(raiz->esquerda);
-    int alturaDireita = altura(raiz->direita);
-
-    int fatorBal = alturaEsquerda - alturaDireita;
-
-    // Rotação simples direita
-    if (fatorBal > 1 && novoNo->numero < raiz->esquerda->numero)
-        return rotacaoDireita(raiz);
-
-    // Rotação simples esquerda
-    if (fatorBal < -1 && novoNo->numero > raiz->direita->numero)
-        return rotacaoEsquerda(raiz);
-
-    // Rotação dupla direita
-    if (fatorBal > 1 && novoNo->numero > raiz->esquerda->numero) {
-        raiz->esquerda = rotacaoEsquerda(raiz->esquerda);
-    return rotacaoDireita(raiz);
+no *listaParaArvore(lista *head, int tamanho) {
+    if (tamanho <= 0) {
+        return NULL;
     }
 
+    // Encontrar o meio da lista
+    int meio = tamanho / 2;
+
+    // Avançar até o meio da lista
+    lista *atual = head;
+    for (int i = 0; i < meio; i++) {
+        atual = &((*atual)->prox);
+    }
+
+    // Criar o nó correspondente ao meio
+    no *raiz = criarNo((*atual)->evento->numero, (*atual)->evento->status);
+
+    // Recursivamente construir as subárvores
+    raiz->esquerda = listaParaArvore(head, meio);
+    raiz->direita = listaParaArvore(&((*atual)->prox), tamanho - meio - 1);
+
     return raiz;
+}
+
+void contador(no *no_print, int*cont){
+    if(no_print == NULL){
+        return;
+    }else{
+        contador(no_print->esquerda, cont);
+        contador(no_print->direita, cont);
+        *cont += 1;
+    }
+}
+
+int contar_nos(Evento * raiz){
+    if(raiz == NULL){
+        return 0;
+    }else{
+        int cont = 0;
+        contador(*raiz, &cont);
+        return cont;
+    }
 }
