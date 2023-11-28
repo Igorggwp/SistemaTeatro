@@ -71,20 +71,12 @@ int liberarArvore(Apresentacao *raiz) {
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
-    listaPoltronas *cabeca = criarlista();
+    listaPoltronas cabeca = criarlista();
     Apresentacao *raiz = criaArvore();
     int alt, verificar = 0, contagem = 0;
     system("cls");
 
     while (1) {
-        // Realizar o balanceamento estático
-        if (verificar == 5) {
-            construirLista(*raiz, cabeca);
-            contagem = contarNos(raiz);
-            *raiz = listaParaArvore(cabeca, contagem);
-            verificar = 0;
-        }
-
         logo();
         printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltronas\n[4] - Deletar Poltrona\n[0] - Sair\n->");
 
@@ -131,6 +123,15 @@ int main() {
         } else {
             system("cls");
             printf("Opção inválida! Por favor, insira uma opção válida.\n");
+        }
+
+        // Realizar o balanceamento estático
+        if (verificar == 5) {
+            printf("Vasco\n");
+            construirLista(*raiz, &cabeca);
+            contagem = contarNos(raiz);
+            *raiz = listaParaArvore(&cabeca, contagem);
+            verificar = 0;
         }
     }
 
