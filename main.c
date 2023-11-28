@@ -2,22 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
+#include <ctype.h>
 
-struct No {
+struct Poltrona {
     int numero; 
     char status; // R = Reservado, L = Livre
-    struct No *esquerda;
-    struct No *direita;
+    struct Poltrona *esquerda;
+    struct Poltrona *direita;
 };
-typedef struct No no;
-typedef struct No *Evento;
+typedef struct Poltrona poltrona;
+typedef struct Poltrona *Apresentacao;
 
-struct Node {
-    Evento evento;
-    struct Node *prox;
+struct PoltronaNode { // Lista encadeada de apresentações
+    Apresentacao apresentacao;
+    struct PoltronaNode *prox;
 };
-typedef struct Node node;
-typedef node *lista;
+typedef struct PoltronaNode poltronaNode;
+typedef poltronaNode *listaPoltronas;
 
 void logo() {
     printf("-----------------------------\n");
@@ -31,8 +32,9 @@ void logo() {
 #include "src/deletar.h"
 #include "src/listar.h"
 
-Evento *criaArvore() {
-    Evento *raiz = (Evento *)malloc(sizeof(Evento));
+// Função para criar uma árvore
+Apresentacao *criaArvore() {
+    Apresentacao *raiz = (Apresentacao *)malloc(sizeof(Apresentacao));
     if (raiz != NULL) {
         *raiz = NULL;
     }
@@ -43,23 +45,25 @@ Evento *criaArvore() {
     return raiz;
 }
 
-void libera_no(no *no_liberar) {
-    if (no_liberar == NULL) {
+// Função recursiva para liberar a memória
+void liberarNo(poltrona *liberacao) { // liberacao que libera a memória de um nó
+    if (liberacao == NULL) {
         return;
     }
     else {
-        libera_no(no_liberar->esquerda);
-        libera_no(no_liberar->direita);
-        free(no_liberar);
+        liberarNo(liberacao->esquerda);
+        liberarNo(liberacao->direita);
+        free(liberacao);
     }
 }
 
-int libera_arvore(Evento *raiz) {
+// Libera a memória de toda árvore 
+int liberarArvore(Apresentacao *raiz) {
     if (raiz == NULL) {
         return 0;
     }
     else {
-        libera_no(*raiz);
+        liberarNo(*raiz);
     }
     free(raiz);
     return 1;
@@ -67,80 +71,69 @@ int libera_arvore(Evento *raiz) {
 
 int main() {
     SetConsoleOutputCP(CP_UTF8);
-    lista *cabeca = criarlista();
-    Evento *raiz = criaArvore();
-    int esc, numero, cont_balanceamento = 0, cont = 0;
-    char status;
+    listaPoltronas *cabeca = criarlista();
+    Apresentacao *raiz = criaArvore();
+    int alt, verificar = 0, contagem = 0;
     system("cls");
 
     while (1) {
-        if (cont_balanceamento == 3) {
-            printf("Realizando o balanceamento estático.\n");
+        // Realizar o balanceamento estático
+        if (verificar == 5) {
             construirLista(*raiz, cabeca);
-            cont = contar_nos(raiz);
-            *raiz = listaParaArvore(cabeca, cont);
-            cont_balanceamento = 0;
+            contagem = contarNos(raiz);
+            *raiz = listaParaArvore(cabeca, contagem);
+            verificar = 0;
         }
 
         logo();
-        printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltronas\n[4] - Deletar Poltrona\n[0] - Voltar\n->");
-        scanf("%d", &esc);
+        printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltronas\n[4] - Deletar Poltrona\n[0] - Sair\n->");
 
-        switch (esc) {
-        case 1:
+        if (scanf("%d", &alt) != 1) {
+            while (getchar() != '\n');
             system("cls");
-            printf("----------------------------------------\n");
-            printf("|          Cadastrar Poltrona          |\n");
-            printf("----------------------------------------\n");
-            printf("Informe o numero: ");
-            scanf("%d", &numero);
-            printf("Informe o status: ");
-            scanf(" %c", &status);
-            if (cadastrar(raiz, numero, status)) {
-                printf("Evento inserido com sucesso.\n");
-                cont_balanceamento++;
+            printf("Opção inválida! Insira um número válido.\n");
+        } else if (alt == 1 || alt == 2 || alt == 3 || alt == 4 || alt == 0) {
+            switch (alt) {
+                case 1:
+                    system("cls");
+                    printf("----------------------------------------\n");
+                    printf("|          Cadastrar Poltrona          |\n");
+                    printf("----------------------------------------\n");
+                    cadastrar(raiz);
+                    verificar++;
+                    break;
+                case 2:
+                    system("cls");
+                    printf("----------------------------------------\n");
+                    printf("|          Atualizar Poltrona          |\n");
+                    printf("----------------------------------------\n");
+                    atualizar(*raiz);
+                    break;
+                case 3:
+                    system("cls");
+                    printf("----------------------------------------\n");
+                    printf("|           Listar Poltrona            |\n");
+                    printf("----------------------------------------\n");
+                    listar(*raiz);
+                    break;
+                case 4:
+                    system("cls");
+                    printf("----------------------------------------\n");
+                    printf("|            Deletar Poltrona          |\n");
+                    printf("----------------------------------------\n");
+                    deletar(raiz);
+                    break;
+                case 0:
+                    liberarArvore(raiz);
+                    printf("Saindo do Sistema.");
+                    exit(1);
             }
-            break;
-        case 2:
+        } else {
             system("cls");
-            printf("----------------------------------------\n");
-            printf("|          Atualizar Poltrona          |\n");
-            printf("----------------------------------------\n");
-            printf("Informe o numero: ");
-            scanf("%d", &numero);
-            printf("Informe o status: ");
-            scanf(" %c", &status);
-            atualizar(*raiz, numero, status, *raiz);
-            break;
-        case 3:
-            system("cls");
-            printf("----------------------------------------\n");
-            printf("|           Listar Poltrona            |\n");
-            printf("----------------------------------------\n");
-            listar(*raiz);
-            break;
-        case 4:
-            system("cls");
-            printf("----------------------------------------\n");
-            printf("|            Deletar Poltrona          |\n");
-            printf("----------------------------------------\n");
-            printf("Informe o numero: ");
-            scanf("%d", &numero);
-            remove_no(raiz, numero);
-            break;
-        case 0:
-            libera_arvore(raiz);
-            exit(1);
-        case 6:
-            construirLista(*raiz, cabeca);
-            exibelista(cabeca);
-            cont = contar_nos(raiz);
-            *raiz = listaParaArvore(cabeca, cont);
-            break;
-        default:
-            printf("Opcao invalida. Tente novamente.\n");
+            printf("Opção inválida! Por favor, insira uma opção válida.\n");
         }
     }
-    libera_arvore(raiz);
+
+    liberarArvore(raiz);
     return 0;
 }

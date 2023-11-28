@@ -1,21 +1,16 @@
-/* Função para Listar Poltronas */
+void listagem(Apresentacao no) {
+    if (no != NULL) {
+        listagem(no->esquerda);
+        printf("Número: %d | Status: %c\n", no->numero, no->status);
+        listagem(no->direita);
+    }
+}
 
-void listar(Evento raiz) {
-    static int frase = 0;
-
+void listar(Apresentacao raiz) {
     if (raiz != NULL) {
-        if (!frase) {
-            printf("Lista de Poltronas:\n");
-            frase = 1;
-        }
-
-        listar(raiz->esquerda);
-        printf("Número: %d | Status: %c\n", raiz->numero, raiz->status);
-        listar(raiz->direita);
-        
+        printf("Lista de Poltronas:\n");
+        listagem(raiz);
     } else {
-        if (!frase) {
-            printf("A arvore está vazia.\n");
-        }
+        printf("A árvore está vazia.\n");
     }
 }

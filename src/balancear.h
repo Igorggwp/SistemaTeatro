@@ -1,5 +1,5 @@
-lista* criarlista(){
-    lista *inicio = (lista*) malloc(sizeof(lista));
+listaPoltronas* criarlista(){
+    listaPoltronas *inicio = (listaPoltronas*) malloc(sizeof(listaPoltronas));
     if (inicio != NULL){
         *inicio = NULL;
     }else{
@@ -8,23 +8,23 @@ lista* criarlista(){
     return inicio;
 }
 
-void exibelista(lista*inicio){
+void exibelista(listaPoltronas* inicio){
     
-    if(*inicio == NULL){
-        printf("Lista vazia");
-    }else{
-        node *temp;
+    if (*inicio == NULL) {
+        printf("Lista vazia\n");
+    } else {
+        poltronaNode *temp;
         temp = (*inicio);
 
-        while (temp != NULL){
-            printf("%s\n", temp->evento->status);
+        while (temp != NULL) {
+            printf("%c\n", temp->apresentacao->status);
             temp = temp->prox;
         }
     }
 }
 
-int inserenofinal(lista* inicio, Evento nodeArv) {
-    node* novo = (node*)malloc(sizeof(node));
+int inserenofinal(listaPoltronas* inicio, Apresentacao nodeArv) {
+    poltronaNode* novo = (poltronaNode*)malloc(sizeof(poltronaNode));
     if (novo == NULL) {
         printf("Erro na alocação\n");
         return 0;
@@ -32,7 +32,7 @@ int inserenofinal(lista* inicio, Evento nodeArv) {
         if ((*inicio) == NULL) {
             *inicio = novo;
         } else {
-            node* temp;
+            poltronaNode* temp;
             temp = (*inicio);
             while (temp->prox != NULL) {
                 temp = temp->prox;
@@ -40,31 +40,31 @@ int inserenofinal(lista* inicio, Evento nodeArv) {
             temp->prox = novo;
             novo->prox = NULL;
         }
-        novo->evento = nodeArv;
+        novo->apresentacao = nodeArv;
         return 1;
     }
 }
 
-int construirLista(Evento nodeArv, lista* list) {
+int construirLista(Apresentacao nodeArv, listaPoltronas* list) {
     if (nodeArv == NULL) {
         return 1;
     }
     construirLista(nodeArv->esquerda, list);
     inserenofinal(list, nodeArv);
     construirLista(nodeArv->direita, list);
-    
+    return 0;
 }
 
-no *criarNo(int numero, const char *status) {
-    no *novoNo = (no *)malloc(sizeof(no));
+poltrona *criarNo(int numero, const char status) {
+    poltrona *novoNo = (poltrona *)malloc(sizeof(poltrona));
     novoNo->numero = numero;
-    strcpy(novoNo->status, status);
+    novoNo->status = status;
     novoNo->esquerda = NULL;
     novoNo->direita = NULL;
     return novoNo;
 }
 
-no *listaParaArvore(lista *head, int tamanho) {
+poltrona *listaParaArvore(listaPoltronas *head, int tamanho) {
     if (tamanho <= 0) {
         return NULL;
     }
@@ -73,13 +73,13 @@ no *listaParaArvore(lista *head, int tamanho) {
     int meio = tamanho / 2;
 
     // Avançar até o meio da lista
-    lista *atual = head;
+    listaPoltronas *atual = head;
     for (int i = 0; i < meio; i++) {
         atual = &((*atual)->prox);
     }
 
     // Criar o nó correspondente ao meio
-    no *raiz = criarNo((*atual)->evento->numero, (*atual)->evento->status);
+    poltrona *raiz = criarNo((*atual)->apresentacao->numero, (*atual)->apresentacao->status);
 
     // Recursivamente construir as subárvores
     raiz->esquerda = listaParaArvore(head, meio);
@@ -88,7 +88,7 @@ no *listaParaArvore(lista *head, int tamanho) {
     return raiz;
 }
 
-void contador(no *no_print, int*cont){
+void contador(poltrona *no_print, int*cont){
     if(no_print == NULL){
         return;
     }else{
@@ -98,7 +98,7 @@ void contador(no *no_print, int*cont){
     }
 }
 
-int contar_nos(Evento * raiz){
+int contarNos(Apresentacao * raiz){
     if(raiz == NULL){
         return 0;
     }else{
