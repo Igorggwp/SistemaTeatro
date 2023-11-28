@@ -1,10 +1,19 @@
 void listar(Arvore raiz) {
-    printf("Lista de Poltronas:\n");
+    static int frase = 0;
+
     if (raiz != NULL) {
+        if (!frase) {
+            printf("Lista de Poltronas:\n");
+            frase = 1;
+        }
+
         listar(raiz->esquerda);
         printf("Número: %d | Status: %c\n", raiz->numero, raiz->status);
         listar(raiz->direita);
     } else {
-        printf("A árvore está vazia.\n");
+        if (!frase) {
+            printf("A árvore está vazia.\n");
+            frase = 1;
+        }
     }
 }

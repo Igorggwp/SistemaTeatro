@@ -26,9 +26,7 @@ void atualizar(Arvore* raiz) {
         printf("Número atual: %d\n", poltrona->numero);
 
         printf("Digite o status correto da poltrona: ");
-        scanf("%c", &poltrona->status);
-
-        *raiz = balancear(*raiz, NULL);
+        scanf(" %c", &poltrona->status);
 
         printf("Poltrona atualizada com sucesso!\n");
     } else {

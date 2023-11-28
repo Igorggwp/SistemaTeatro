@@ -29,14 +29,11 @@ struct NoApresentacao {
 typedef struct NoApresentacao NoApresentacao;
 typedef NoApresentacao *Lista;
 
-
 void logo() {
     printf("-----------------------------\n");
     printf("|       Teatro Vegetti      |\n");
     printf("-----------------------------\n");
 }
-
-
 
 Arvore encontrarMenorNo(Arvore raiz);
 
