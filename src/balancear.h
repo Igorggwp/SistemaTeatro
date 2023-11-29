@@ -9,49 +9,31 @@ listaPoltronas criarlista() {
     return inicio;
 }
 
-// Função para inserir no final da lista encadeada
-int inserirFinal(listaPoltronas *inicio, Apresentacao nodeArv) {
+// Função para inserir na lista encadeada
+int inserir(listaPoltronas *inicio, Apresentacao nodeArv) {
     poltronaNode *novo = (poltronaNode *)malloc(sizeof(poltronaNode));
     if (novo == NULL) {
         printf("Erro na alocação\n");
         return 0;
+    }
+
+    novo->apresentacao = nodeArv;
+    novo->prox = NULL;
+
+    if (*inicio == NULL || (*inicio)->apresentacao->numero > nodeArv->numero) {
+        novo->prox = *inicio;
+        *inicio = novo;
     } else {
-        novo->apresentacao = nodeArv;
-        novo->prox = NULL;
-
-        if (*inicio == NULL) {
-            *inicio = novo;
-        } else {
-            // Verificar se o elemento já está na lista
-            poltronaNode *temp = *inicio;
-            while (temp != NULL) {
-                if (temp->apresentacao == nodeArv) {
-                    free(novo);
-                    return 0;
-                }
-                temp = temp->prox;
-            }
-
-            // Adicionar novo elemento ao final da lista
-            temp = *inicio;
-            while (temp->prox != NULL) {
-                temp = temp->prox;
-            }
-            temp->prox = novo;
+        poltronaNode *temp = *inicio;
+        while (temp->prox != NULL && temp->prox->apresentacao->numero < nodeArv->numero) {
+            temp = temp->prox;
         }
-        return 1;
-    }
-}
 
-// Função para construir a lista encadeada a partir da árvore
-int construirLista(Apresentacao nodeArv, listaPoltronas *list) {
-    if (nodeArv == NULL) {
-        return 1;
+        novo->prox = temp->prox;
+        temp->prox = novo;
     }
-    construirLista(nodeArv->esquerda, list);
-    inserirFinal(list, nodeArv);
-    construirLista(nodeArv->direita, list);
-    return 0;
+
+    return 1;
 }
 
 // Função para criar um novo nó da árvore
@@ -64,19 +46,17 @@ poltrona *criarNo(int numero, char status) {
     return novoNo;
 }
 
-// Função para exibir a lista encadeada
-void exibelista(listaPoltronas *inicio) {
-    if (*inicio == NULL) {
-        printf("Lista vazia\n");
-    } else {
-        poltronaNode *temp;
-        temp = (*inicio);
-
-        while (temp != NULL) {
-            printf("%c\n", temp->apresentacao->status);
-            temp = temp->prox;
-        }
+// Função para construir a lista encadeada a partir da árvore
+int construirLista(Apresentacao nodeArv, listaPoltronas *list) {
+    if (nodeArv == NULL) {
+        return 1;
     }
+
+    construirLista(nodeArv->esquerda, list);
+    inserir(list, nodeArv);
+    construirLista(nodeArv->direita, list);
+
+    return 0;
 }
 
 // Função para converter a lista encadeada em uma árvore binária de busca
@@ -88,7 +68,6 @@ poltrona *listaParaArvore(listaPoltronas *head, int tamanho) {
     poltronaNode *atualNode = *head;
     poltrona *raiz = criarNo(atualNode->apresentacao->numero, atualNode->apresentacao->status);
 
-    // Avançar para o próximo elemento na lista
     *head = atualNode->prox;
 
     raiz->direita = listaParaArvore(head, tamanho - 1);

@@ -1,3 +1,5 @@
+/* Funções para Listar Poltronas */
+
 void listagem(Apresentacao no) {
     if (no != NULL) {
         listagem(no->esquerda);

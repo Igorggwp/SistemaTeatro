@@ -13,7 +13,7 @@ struct Poltrona {
 typedef struct Poltrona poltrona;
 typedef struct Poltrona *Apresentacao;
 
-struct PoltronaNode { // Lista encadeada de apresentações
+struct PoltronaNode {
     Apresentacao apresentacao;
     struct PoltronaNode *prox;
 };
@@ -46,7 +46,7 @@ Apresentacao *criaArvore() {
 }
 
 // Função recursiva para liberar a memória
-void liberarNo(poltrona *liberacao) { // liberacao que libera a memória de um nó
+void liberarNo(poltrona *liberacao) { // liberacao libera a memória de um nó
     if (liberacao == NULL) {
         return;
     }
@@ -77,6 +77,7 @@ int main() {
     system("cls");
 
     while (1) {
+
         logo();
         printf("Selecione a opção desejada\n[1] - Cadastrar Poltrona\n[2] - Atualizar Poltrona\n[3] - Listar Poltronas\n[4] - Deletar Poltrona\n[0] - Sair\n->");
 
@@ -125,9 +126,8 @@ int main() {
             printf("Opção inválida! Por favor, insira uma opção válida.\n");
         }
 
-        // Realizar o balanceamento estático
+        // Realizar balanceamento estático
         if (verificar == 5) {
-            printf("Vasco\n");
             construirLista(*raiz, &cabeca);
             contagem = contarNos(raiz);
             *raiz = listaParaArvore(&cabeca, contagem);
