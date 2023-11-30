@@ -127,7 +127,7 @@ int main() {
         }
 
         // Realizar balanceamento estático
-        if (verificar == 5) {
+        if (verificar == 3) {
             construirLista(*raiz, &cabeca);
             contagem = contarNos(raiz);
             *raiz = listaParaArvore(&cabeca, contagem);
