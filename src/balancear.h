@@ -67,7 +67,7 @@ int construirLista(Apresentacao nodeArv, listaPoltronas *list) {
 }
 
 // Função para converter a lista encadeada em uma árvore binária de busca
-poltrona *listaParaArvore(listaPoltronas *head, int tamanho) {
+poltrona *listaArvore(listaPoltronas *head, int tamanho) {
 
     if (tamanho <= 0 || *head == NULL) {
         return NULL;
@@ -80,7 +80,7 @@ poltrona *listaParaArvore(listaPoltronas *head, int tamanho) {
     *head = atualNode->prox;  // Atualiza para a cabeça da lista
 
     // Constrói a subárvore direita
-    raiz->direita = listaParaArvore(head, tamanho - 1);
+    raiz->direita = listaArvore(head, tamanho - 1);
 
     return raiz;
 }
