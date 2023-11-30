@@ -86,14 +86,14 @@ poltrona *listaParaArvore(listaPoltronas *head, int tamanho) {
 }
 
 // Função para contar o número de nós na árvore
-void contador(poltrona *no, int *contagem) {
-    // Caso base: nó nulo
+void numeroNo(poltrona *no, int *contagem) {
+
     if (no == NULL) {
         return;
     } else {
         // Conta o nó atual e subárvores
-        contador(no->esquerda, contagem);
-        contador(no->direita, contagem);
+        numeroNo(no->esquerda, contagem);
+        numeroNo(no->direita, contagem);
         *contagem += 1;
     }
 }
@@ -104,7 +104,7 @@ int contarNos(Apresentacao *raiz) {
         return 0;
     } else {
         int contagem = 0;
-        contador(*raiz, &contagem);  // Função de contagem recursiva
+        numeroNo(*raiz, &contagem);  // Função de contagem recursiva
         return contagem;
     }
 }

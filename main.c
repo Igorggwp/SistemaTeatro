@@ -73,7 +73,7 @@ int main() {
     SetConsoleOutputCP(CP_UTF8);
     listaPoltronas cabeca = criarlista();
     Apresentacao *raiz = criaArvore();
-    int alt, verificar = 0, contagem = 0;
+    int alt, verificar = 0, numeroNo = 0;
     system("cls");
 
     while (1) {
@@ -129,8 +129,8 @@ int main() {
         // Realizar balanceamento estático
         if (verificar == 3) {
             construirLista(*raiz, &cabeca);
-            contagem = contarNos(raiz);
-            *raiz = listaParaArvore(&cabeca, contagem);
+            numeroNo = contarNos(raiz);
+            *raiz = listaArvore(&cabeca, numeroNo);
             verificar = 0;
         }
     }
