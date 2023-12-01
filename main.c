@@ -130,7 +130,7 @@ int main() {
         if (verificar == 3) {
             construirLista(*raiz, &cabeca);
             numeroNo = contarNos(raiz);
-            *raiz = listaArvore(&cabeca, numeroNo);
+            *raiz = listaArvoreBalanceada(&cabeca, numeroNo);
             verificar = 0;
         }
     }

@@ -1,6 +1,6 @@
-// Função para criar a lista encadeada inicial
+// lista encadeada inicial
 listaPoltronas criarlista() {
-    // Aloca espaço para o primeiro nó da lista
+    // primeiro nó da lista
     listaPoltronas inicio = (listaPoltronas)malloc(sizeof(poltronaNode));
     if (inicio != NULL) {
         inicio->prox = NULL; 
@@ -10,21 +10,21 @@ listaPoltronas criarlista() {
     return inicio;
 }
 
-// Função para inserir na lista encadeada
+// inserir na lista encadeada
 int inserir(listaPoltronas *inicio, Apresentacao nodeArv) {
-    // Aloca espaço para um novo nó da lista
+    // espaço para um novo nó
     poltronaNode *novo = (poltronaNode *)malloc(sizeof(poltronaNode));
     if (novo == NULL) {
         printf("Erro na alocação\n");
         return 0;
     }
 
-    novo->apresentacao = nodeArv;  // Armazena o ponteiro para a apresentação no novo nó
+    novo->apresentacao = nodeArv;  // Armazena no novo nó
     novo->prox = NULL; 
 
-    // Verifica se a lista está vazia ou se o novo nó deve ser o primeiro
+    // vazia ou primeiro
     if (*inicio == NULL || (*inicio)->apresentacao->numero > nodeArv->numero) {
-        novo->prox = *inicio;  // Adiciona o novo nó no início da lista
+        novo->prox = *inicio;  // novo nó no início 
         *inicio = novo;
     } else {
         // Encontra a posição correta 
@@ -58,34 +58,45 @@ int construirLista(Apresentacao nodeArv, listaPoltronas *list) {
         return 1;
     }
 
-    // Constrói a lista encadeada recursivamente
+    // Constrói a lista encadeada
     construirLista(nodeArv->esquerda, list);
     inserir(list, nodeArv);  // Insere o nó atual na lista
     construirLista(nodeArv->direita, list);
 
     return 0;
-}
+}   
 
-// Função para converter a lista encadeada em uma árvore binária de busca
-poltrona *listaArvore(listaPoltronas *head, int tamanho) {
+// Função para converter a lista encadeada em uma árvore binária de busca balanceada
+poltrona *listaArvoreBalanceada(listaPoltronas *head, int tamanho) {
 
     if (tamanho <= 0 || *head == NULL) {
         return NULL;
     }
 
-    poltronaNode *atualNode = *head;
-    // Cria o nó raiz da árvore a partir do primeiro nó da lista
-    poltrona *raiz = criarNo(atualNode->apresentacao->numero, atualNode->apresentacao->status);
+    // Encontra o nó do meio da lista
+    int meio = tamanho / 2;
+    poltronaNode *meioNode = *head;
+    for (int i = 0; i < meio; i++) {
+        meioNode = meioNode->prox;
+    }
 
-    *head = atualNode->prox;  // Atualiza para a cabeça da lista
+    // raiz da árvore
+    poltrona *raiz = criarNo(meioNode->apresentacao->numero, meioNode->apresentacao->status);
 
-    // Constrói a subárvore direita
-    raiz->direita = listaArvore(head, tamanho - 1);
+    // subárvore esquerda
+    raiz->esquerda = listaArvoreBalanceada(head, meio);
+
+    // Atualiza para o próximo nó após o nó do meio
+    *head = meioNode->prox;
+
+    // subárvore direita
+    raiz->direita = listaArvoreBalanceada(head, tamanho - meio - 1);
 
     return raiz;
 }
 
-// Função para contar o número de nós na árvore
+
+// contar o número de nós na árvore
 void numeroNo(poltrona *no, int *contagem) {
 
     if (no == NULL) {
@@ -98,13 +109,13 @@ void numeroNo(poltrona *no, int *contagem) {
     }
 }
 
-// Função para contar o número de nós a partir da raiz
+//  contar o número de nós
 int contarNos(Apresentacao *raiz) {
     if (raiz == NULL) {
         return 0;
     } else {
         int contagem = 0;
-        numeroNo(*raiz, &contagem);  // Função de contagem recursiva
+        numeroNo(*raiz, &contagem);  // contagem
         return contagem;
     }
 }
